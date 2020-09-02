@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <!-- 导入页面的基本样式 -->
+    <link rel="stylesheet" href="./css/search.css" />
+    <!-- 导入 jQuery -->
+    <script src="./lib/jquery.js"></script>
+    <script src="./template-web.js"></script>
+</head>
+<style>
+    #more {
+        display: none;
+        border: 1px solid #ccc;
+    }
+
+    #message {
+
+        padding-left: 5px;
+        line-height: 30px;
+    }
+
+    #message:hover {
+        cursor: pointer;
+        background-color: #eee;
+    }
+</style>
+
+<body>
+    <div class="container">
+        <!-- Logo -->
+        <img src="./images/taobao_logo.png" alt="" class="logo" />
+
+        <div class="box">
+            <!-- tab 栏 -->
+            <div class="tabs">
+                <div class="tab-active">宝贝</div>
+                <div>店铺</div>
+            </div>
+            <!-- 搜索区域（搜索框和搜索按钮） -->
+            <div class="search-box">
+                <input type="text" class="ipt" placeholder="请输入要搜索的内容" /><button class="btnSearch">
+                    搜索
+                </button>
+            </div>
+            <div id="more"></div>
+        </div>
+    </div>
+</body>
+
+<script type="text/html" id="muban">
+    {{each result}}
+    <div id='message'>{{$value[0]}}</div>
+    {{/each}}
+</script>
+
+<script>
+
+var timer = ''
+    $('.ipt').on('keyup', function () {
+        clearTimeout(timer)
+        var keywords = $(this).val().trim()
+        if (keywords.length <= 0) {
+            return $('#more').empty().hide()
+        }
+
+     timer = setTimeout(function () {
+            get(keywords)
+        },500)
+
+      
+
+        function get(kw) {
+            $.ajax({
+                url: 'https://suggest.taobao.com/sug?q=' + kw,
+                dataType: 'jsonp',
+                success: function (res) {
+                    console.log(res);
+                    if (res.result.length <= 0) {
+                        return $('#more').empty().hide()
+                    }
+                    var abc = template('muban', res)
+                    $('#more').html(abc)
+                    $('#more').show()
+                }
+            })
+
+        }
+
+
+    })
+</script>
+
+</html>
